@@ -12,7 +12,7 @@ Model name is converted to lowercase for the collection name:
 """
 
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List, Dict, Any
 
 # Example schemas (replace with your own):
 
@@ -41,8 +41,21 @@ class Product(BaseModel):
 # Add your own schemas here:
 # --------------------------------------------------
 
-# Note: The Flames database viewer will automatically:
-# 1. Read these schemas from GET /schema endpoint
-# 2. Use them for document validation when creating/editing
-# 3. Handle all database operations (CRUD) directly
-# 4. You don't need to create any database endpoints!
+class Store(BaseModel):
+    """
+    Stores collection schema
+    Collection name: "store"
+    """
+    name: str = Field(..., description="Store name")
+    address: str = Field(..., description="Street address")
+    city: str = Field(..., description="City")
+    country: str = Field(..., description="Country")
+    # GeoJSON-like location: [lng, lat]
+    location: Dict[str, Any] = Field(
+        ..., description='GeoJSON Point: {"type": "Point", "coordinates": [lng, lat]}'
+    )
+    # Simple embedded inventory for demo: list of {product_title, quantity, price}
+    inventory: List[Dict[str, Any]] = Field(
+        default_factory=list,
+        description="List of product stock entries"
+    )
